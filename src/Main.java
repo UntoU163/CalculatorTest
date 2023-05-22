@@ -7,7 +7,7 @@ public class Main {
         String str = sc.nextLine();
         String brackets = str.replaceAll("[^()]", "");
         System.out.print(isValidBrackets(brackets) ? "Введено правильное выражение" : "Введено неккоректное выражение");
-
+        System.getProperty("user.dir");
     }
 
     public static boolean isValidBrackets(String bracketString){

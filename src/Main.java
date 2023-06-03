@@ -66,6 +66,7 @@ public class Main {
                         case "", "add" -> value[0] += parserString(Arrays.copyOfRange(arr, i + 1, j), value[1])[0];
                         default -> value[0] -= parserString(Arrays.copyOfRange(arr, i + 1, j), value[1])[0];
                     }
+                    //value[1] =
                     i = j + 1;
                     break;
                 case "-":

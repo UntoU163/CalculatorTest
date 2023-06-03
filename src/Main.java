@@ -16,7 +16,8 @@ public class Main {
         String[] mass = str.split(" ");
         double[] resultMain = new double[2];
         resultMain =  parserString(mass, 0);
-        System.out.println((resultMain[1] == 0 || resultMain[1] == 1) ? resultMain[0] * 60 + "р." : "$" + resultMain[0] );
+
+        System.out.println((resultMain[1] == 0 || resultMain[1] == 1) ? String.format("%,.2f", resultMain[0])  + "р." : "$" + String.format("%,.2f", resultMain[0]) );
     }
 
     public static boolean isValidBrackets(String bracketString){
@@ -41,7 +42,7 @@ public class Main {
 
         Deque<Character> stack = new LinkedList<>();
         double[] value = new double[2];
-        value[0] = 0;
+        //value[0] = 0;
         value[1] = curr;
 // Массив будет возвращать сумму и валюту
 // Второй элемент хранит валюту: 1 - RUB, 2 - USD
@@ -88,6 +89,7 @@ public class Main {
                         case "", "add" -> value[0] += toRubles(Arrays.copyOfRange(arr, i + 1, j), value[1])[0];
                         default -> value[0] -= toRubles(Arrays.copyOfRange(arr, i + 1, j), value[1])[0];
                     }
+                    value[1] = 1;
                     i = j + 1;
                     break;
                 case "toDollars(":
@@ -103,6 +105,7 @@ public class Main {
                         case "", "add" -> value[0] += toDollars(Arrays.copyOfRange(arr, i + 1, j), value[1])[0];
                         default -> value[0] -= toDollars(Arrays.copyOfRange(arr, i + 1, j), value[1])[0];
                     }
+                    value[1] = 2;
                     i = j + 1;
                     break;
                 default:

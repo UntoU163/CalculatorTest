@@ -10,10 +10,10 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         sc.useLocale(Locale.US);
         String str = sc.nextLine().replaceAll(",","."); // toDollars( 737р + toRubles( $85.4 ) )
-        String brackets = str.replaceAll("[^()]", "");
-        System.out.println(isValidBrackets(brackets) ? "Введено правильное выражение" : "Введено неккоректное выражение");
+        //String brackets = str.replaceAll("[^()]", "");
+        System.out.println(isValidBrackets(str.replaceAll("[^()]", "")) ? "Введено правильное выражение" : "Введено неккоректное выражение");
 
-        String[] mass = str.split(" ");
+        String[] mass =  convertString(str); //str.split(" ");
         double[] resultMain = new double[2];
         resultMain =  parserString(mass, 0);
 
@@ -41,6 +41,7 @@ public class Main {
         brackets.put(')', '(');
 
         Deque<Character> stack = new LinkedList<>();
+        double[] result = new double[2];
         double[] value = new double[2];
         //value[0] = 0;
         value[1] = curr;
@@ -62,11 +63,12 @@ public class Main {
                         else if (arr[j].contains(")")) stack.pop();
                     } while (!stack.isEmpty());
 
+                    result = parserString(Arrays.copyOfRange(arr, i + 2, j), value[1]);
                     switch (act) {
-                        case "", "add" -> value[0] += parserString(Arrays.copyOfRange(arr, i + 1, j), value[1])[0];
-                        default -> value[0] -= parserString(Arrays.copyOfRange(arr, i + 1, j), value[1])[0];
+                        case "", "add" -> value[0] += result[0];
+                        default -> value[0] -= result[0];
                     }
-                    //value[1] =
+                    value[1] = result[1];
                     i = j + 1;
                     break;
                 case "-":
@@ -77,36 +79,38 @@ public class Main {
                     act = "add";
                     i++;
                     break;
-                case "toRubles(":
+                case "toRubles":
                     j = i;
-                    stack.push('(');
+                    //stack.push('(');
                     do {
                         j++;
                         if (arr[j].contains("(")) stack.push('(');
                         else if (arr[j].contains(")")) stack.pop();
                     } while (!stack.isEmpty());
 
+                    result = toRubles(Arrays.copyOfRange(arr, i + 2, j), value[1]);
                     switch (act) {
-                        case "", "add" -> value[0] += toRubles(Arrays.copyOfRange(arr, i + 1, j), value[1])[0];
-                        default -> value[0] -= toRubles(Arrays.copyOfRange(arr, i + 1, j), value[1])[0];
+                        case "", "add" -> value[0] += result[0];
+                        default -> value[0] -= result[0];
                     }
-                    value[1] = 1;
+                    value[1] = result[1];
                     i = j + 1;
                     break;
-                case "toDollars(":
+                case "toDollars":
                     j = i;
-                    stack.push('(');
+                    //stack.push('(');
                     do {
                         j++;
                         if (arr[j].contains("(")) stack.push('(');
                         else if (arr[j].contains(")")) stack.pop();
                     } while (!stack.isEmpty());
 
+                    result = toDollars(Arrays.copyOfRange(arr, i + 2, j), value[1]);
                     switch (act) {
-                        case "", "add" -> value[0] += toDollars(Arrays.copyOfRange(arr, i + 1, j), value[1])[0];
-                        default -> value[0] -= toDollars(Arrays.copyOfRange(arr, i + 1, j), value[1])[0];
+                        case "", "add" -> value[0] += result[0];
+                        default -> value[0] -= result[0];
                     }
-                    value[1] = 2;
+                    value[1] = result[1];
                     i = j + 1;
                     break;
                 default:
@@ -154,6 +158,7 @@ public class Main {
         double[] resultMain = new double[2];
         resultMain =  parserString(arrr, 2);
         resultMain[0] *= value;
+        resultMain[1] = 1;
         return resultMain;
     }
 
@@ -173,6 +178,21 @@ public class Main {
         double[] resultMain = new double[2];
         resultMain =  parserString(arrd, 1);
         resultMain[0] /= value;
+        resultMain[1] = 2;
         return resultMain;
+    }
+
+    public static String[] convertString(String str) {
+
+        str = str.toLowerCase().replaceAll(" ", "")
+                .replaceAll("torubles", "toRubles ")
+                .replaceAll("todollars", "toDollars ")
+                .replaceAll("\\+", " + ")
+                .replaceAll("-", " - ")
+                .replaceAll("\\(", "( ")
+                .replaceAll("\\)", " )");
+
+        String[] arr = str.split(" ");
+        return arr;
     }
 }

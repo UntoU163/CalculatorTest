@@ -1,4 +1,3 @@
-import javax.xml.validation.Validator;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -10,8 +9,13 @@ public class Main {
         Scanner sc = new Scanner(System.in);
         sc.useLocale(Locale.US);
         String str = sc.nextLine().replaceAll(",","."); // toDollars( 737р + toRubles( $85.4 ) )
-        //String brackets = str.replaceAll("[^()]", "");
-        System.out.println(isValidBrackets(str.replaceAll("[^()]", "")) ? "Введено правильное выражение" : "Введено неккоректное выражение");
+
+        if (isValidBrackets(str.replaceAll("[^()]", ""))) {
+            //System.out.println("Введено правильное выражение");
+        } else {
+            System.out.println("Введено неккоректное выражение");
+            System.exit(0);
+        }
 
         String[] mass =  convertString(str); //str.split(" ");
         double[] resultMain = new double[2];
@@ -43,7 +47,6 @@ public class Main {
         Deque<Character> stack = new LinkedList<>();
         double[] result = new double[2];
         double[] value = new double[2];
-        //value[0] = 0;
         value[1] = curr;
 // Массив будет возвращать сумму и валюту
 // Второй элемент хранит валюту: 1 - RUB, 2 - USD
@@ -56,13 +59,15 @@ public class Main {
             switch (arr[i]){
                 case "(":
                     j = i;
-                    stack.push('(');
                     do {
                         j++;
                         if (arr[j].contains("(")) stack.push('(');
                         else if (arr[j].contains(")")) stack.pop();
-                    } while (!stack.isEmpty());
-
+                    } while (!stack.isEmpty() || j != arr.length - 1);
+                    if (!stack.isEmpty()) {
+                        System.out.println("Введенно некорректное значение");
+                        System.exit(0);
+                    }
                     result = parserString(Arrays.copyOfRange(arr, i + 2, j), value[1]);
                     switch (act) {
                         case "", "add" -> value[0] += result[0];
@@ -81,13 +86,15 @@ public class Main {
                     break;
                 case "toRubles":
                     j = i;
-                    //stack.push('(');
                     do {
                         j++;
                         if (arr[j].contains("(")) stack.push('(');
                         else if (arr[j].contains(")")) stack.pop();
-                    } while (!stack.isEmpty());
-
+                    } while (!stack.isEmpty() || j != arr.length - 1);
+                    if (!stack.isEmpty()) {
+                        System.out.println("Введенно некорректное значение");
+                        System.exit(0);
+                    }
                     result = toRubles(Arrays.copyOfRange(arr, i + 2, j), value[1]);
                     switch (act) {
                         case "", "add" -> value[0] += result[0];
@@ -98,13 +105,15 @@ public class Main {
                     break;
                 case "toDollars":
                     j = i;
-                    //stack.push('(');
                     do {
                         j++;
                         if (arr[j].contains("(")) stack.push('(');
                         else if (arr[j].contains(")")) stack.pop();
-                    } while (!stack.isEmpty());
-
+                    } while (!stack.isEmpty() || j != arr.length - 1);
+                    if (!stack.isEmpty()) {
+                        System.out.println("Введенно некорректное значение");
+                        System.exit(0);
+                    }
                     result = toDollars(Arrays.copyOfRange(arr, i + 2, j), value[1]);
                     switch (act) {
                         case "", "add" -> value[0] += result[0];
@@ -139,7 +148,6 @@ public class Main {
                     break;
             }
         }
-
         return value;
     }
 
@@ -184,13 +192,17 @@ public class Main {
 
     public static String[] convertString(String str) {
 
-        str = str.toLowerCase().replaceAll(" ", "")
-                .replaceAll("torubles", "toRubles ")
-                .replaceAll("todollars", "toDollars ")
-                .replaceAll("\\+", " + ")
-                .replaceAll("-", " - ")
-                .replaceAll("\\(", "( ")
-                .replaceAll("\\)", " )");
+        str = str.toLowerCase().replaceAll(" ", "");
+        if (str.contains("()")) {
+            System.out.println("Введенно некорректное значение");
+            System.exit(0);
+        }
+        str = str.replaceAll("torubles", "toRubles ")
+                 .replaceAll("todollars", "toDollars ")
+                 .replaceAll("\\+", " + ")
+                 .replaceAll("-", " - ")
+                 .replaceAll("\\(", "( ")
+                 .replaceAll("\\)", " )");
 
         String[] arr = str.split(" ");
         return arr;
